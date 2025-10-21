@@ -12,6 +12,7 @@ import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.InputStream;
 import java.util.List;
@@ -25,17 +26,36 @@ public class DocumentIngestionService {
     @Inject
     EmbeddingStore<TextSegment> embeddingStore;
 
+    @Inject
+    TextPreprocessingService textPreprocessingService;
+
+    @ConfigProperty(name = "quarkus.langchain4j.easy-rag.max-segment-size", defaultValue = "1000")
+    int maxSegmentSize;
+
+    @ConfigProperty(name = "quarkus.langchain4j.easy-rag.max-overlap-size", defaultValue = "200")
+    int maxOverlapSize;
+
     public void ingestDocument(InputStream inputStream, String fileName, String contentType) {
         // Parse document based on type
         Document document = parseDocument(inputStream, fileName, contentType);
 
-        // Split document into segments
-        DocumentSplitter splitter = DocumentSplitters.recursive(
-            1000,  // maxSegmentSize
-            200    // maxOverlapSize
-        );
+        // Pré-processar o texto do documento
+        String originalText = document.text();
+        String preprocessedText = textPreprocessingService.preprocessForEmbedding(originalText);
 
-        List<TextSegment> segments = splitter.split(document);
+        // Validar se o texto processado é adequado
+        if (!textPreprocessingService.isValidForEmbedding(preprocessedText)) {
+            throw new IllegalArgumentException("Documento não contém texto válido após pré-processamento");
+        }
+
+        // Criar novo documento com texto pré-processado
+        Document processedDocument = Document.from(preprocessedText, document.metadata());
+
+        // Split document into segments using configured values
+        DocumentSplitter splitter = DocumentSplitters.recursive(
+            maxSegmentSize,
+            maxOverlapSize
+        );
 
         // Create ingestor and ingest
         EmbeddingStoreIngestor ingestor = EmbeddingStoreIngestor.builder()
@@ -44,7 +64,7 @@ public class DocumentIngestionService {
             .documentSplitter(splitter)
             .build();
 
-        ingestor.ingest(document);
+        ingestor.ingest(processedDocument);
     }
 
     private Document parseDocument(InputStream inputStream, String fileName, String contentType) {
@@ -54,7 +74,6 @@ public class DocumentIngestionService {
                  "application/msword" -> new ApachePoiDocumentParser().parse(inputStream);
             case "text/plain" -> new TextDocumentParser().parse(inputStream);
             default -> {
-                // Try text parser as fallback
                 yield new TextDocumentParser().parse(inputStream);
             }
         };
