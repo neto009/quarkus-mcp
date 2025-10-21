@@ -1,5 +1,8 @@
-package com.quarkus.rag.resource;
+package com.quarkus.rag.controller;
 
+import com.quarkus.rag.dto.agent.AgentRequest;
+import com.quarkus.rag.dto.agent.AnalyzeRequest;
+import com.quarkus.rag.dto.agent.SimpleResponse;
 import com.quarkus.rag.service.MultiAgentOrchestrator;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -8,7 +11,7 @@ import jakarta.ws.rs.core.MediaType;
 @Path("/api/agents")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class AgentResource {
+public class AgentController {
 
     @Inject
     MultiAgentOrchestrator orchestrator;
@@ -47,9 +50,5 @@ public class AgentResource {
     public MultiAgentOrchestrator.DocumentAnalysisResult analyzeDocument(AnalyzeRequest request) {
         return orchestrator.analyzeWithAgents(request.content());
     }
-
-    public record AgentRequest(String question, Integer maxResults) {}
-    public record SimpleResponse(String answer) {}
-    public record AnalyzeRequest(String content) {}
 }
 

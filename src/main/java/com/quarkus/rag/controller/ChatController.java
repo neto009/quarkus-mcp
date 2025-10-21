@@ -1,5 +1,7 @@
-package com.quarkus.rag.resource;
+package com.quarkus.rag.controller;
 
+import com.quarkus.rag.dto.chat.ChatRequest;
+import com.quarkus.rag.dto.chat.ChatResponse;
 import com.quarkus.rag.service.RagService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -8,7 +10,7 @@ import jakarta.ws.rs.core.MediaType;
 @Path("/api/chat")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class ChatResource {
+public class ChatController {
 
     @Inject
     RagService ragService;
@@ -21,8 +23,5 @@ public class ChatResource {
         );
         return new ChatResponse(answer);
     }
-
-    public record ChatRequest(String question, Integer maxResults) {}
-    public record ChatResponse(String answer) {}
 }
 

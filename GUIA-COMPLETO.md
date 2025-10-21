@@ -107,11 +107,29 @@ QUARKUS-MCP/
 ├── src/
 │   └── main/
 │       ├── java/com/quarkus/rag/
-│       │   ├── resource/          # Controllers REST
-│       │   │   ├── ChatResource.java
-│       │   │   ├── DocumentResource.java
-│       │   │   ├── AgentResource.java
-│       │   │   └── MCPComparisonResource.java
+│       │   ├── controller/        # Controllers REST (MVC)
+│       │   │   ├── ChatController.java
+│       │   │   ├── DocumentController.java
+│       │   │   ├── AgentController.java
+│       │   │   └── MCPComparisonController.java
+│       │   ├── dto/               # Data Transfer Objects
+│       │   │   ├── chat/          # DTOs de Chat
+│       │   │   │   ├── ChatRequest.java
+│       │   │   │   └── ChatResponse.java
+│       │   │   ├── agent/         # DTOs de Agentes
+│       │   │   │   ├── AgentRequest.java
+│       │   │   │   ├── SimpleResponse.java
+│       │   │   │   └── AnalyzeRequest.java
+│       │   │   ├── mcp/           # DTOs de MCP/Comparação
+│       │   │   │   ├── MCPRequest.java
+│       │   │   │   ├── ComparisonResponse.java
+│       │   │   │   ├── ApproachResult.java
+│       │   │   │   ├── ComparisonMetrics.java
+│       │   │   │   ├── BenchmarkRequest.java
+│       │   │   │   ├── BenchmarkResponse.java
+│       │   │   │   ├── ApproachInfo.java
+│       │   │   │   └── ApproachDetails.java
+│       │   │   └── document/      # DTOs de Documentos (futuro)
 │       │   ├── service/           # Lógica de negócio
 │       │   │   ├── RagService.java
 │       │   │   ├── DocumentIngestionService.java

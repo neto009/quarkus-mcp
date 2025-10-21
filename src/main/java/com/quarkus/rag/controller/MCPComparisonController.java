@@ -1,5 +1,6 @@
-package com.quarkus.rag.resource;
+package com.quarkus.rag.controller;
 
+import com.quarkus.rag.dto.mcp.*;
 import com.quarkus.rag.mcp.service.MCPOrchestrator;
 import com.quarkus.rag.service.MultiAgentOrchestrator;
 import jakarta.inject.Inject;
@@ -15,9 +16,9 @@ import org.jboss.logging.Logger;
 @Path("/api/mcp")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class MCPComparisonResource {
+public class MCPComparisonController {
 
-    private static final Logger LOG = Logger.getLogger(MCPComparisonResource.class);
+    private static final Logger LOG = Logger.getLogger(MCPComparisonController.class);
 
     @Inject
     MultiAgentOrchestrator langchainOrchestrator;
@@ -204,55 +205,5 @@ public class MCPComparisonResource {
         if (time1 == 0) return 0;
         return ((double) (time1 - time2) / time1) * 100;
     }
-
-    // DTOs
-    public record MCPRequest(String question, Integer maxResults) {}
-
-    public record ComparisonResponse(
-        ApproachResult langchainResult,
-        ApproachResult mcpResult,
-        ComparisonMetrics metrics
-    ) {}
-
-    public record ApproachResult(
-        String approachName,
-        String finalAnswer,
-        String documentAnalysis,
-        String technicalAnswer,
-        String validation,
-        long executionTimeMs,
-        String error
-    ) {}
-
-    public record ComparisonMetrics(
-        long langchainTimeMs,
-        long mcpTimeMs,
-        String faster,
-        double performanceGainPercent
-    ) {}
-
-    public record BenchmarkRequest(String question, int iterations) {}
-
-    public record BenchmarkResponse(
-        int totalIterations,
-        int successfulLangChain,
-        int successfulMCP,
-        double avgTimeLangChainMs,
-        double avgTimeMCPMs,
-        String faster,
-        double performanceGainPercent
-    ) {}
-
-    public record ApproachInfo(
-        ApproachDetails langchain,
-        ApproachDetails mcp
-    ) {}
-
-    public record ApproachDetails(
-        String name,
-        String description,
-        String[] advantages,
-        String[] disadvantages
-    ) {}
 }
 

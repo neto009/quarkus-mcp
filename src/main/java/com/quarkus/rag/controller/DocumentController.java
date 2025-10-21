@@ -1,4 +1,4 @@
-package com.quarkus.rag.resource;
+package com.quarkus.rag.controller;
 
 import com.quarkus.rag.entity.Document;
 import com.quarkus.rag.repository.DocumentRepository;
@@ -17,7 +17,7 @@ import java.util.List;
 
 @Path("/api/documents")
 @Produces(MediaType.APPLICATION_JSON)
-public class DocumentResource {
+public class DocumentController {
 
     @Inject
     DocumentRepository documentRepository;
@@ -38,6 +38,7 @@ public class DocumentResource {
                     .build();
             }
 
+            // Save document metadata
             Document document = new Document();
             document.setFileName(file.fileName());
             document.setContentType(file.contentType());
