@@ -17,7 +17,6 @@ import java.util.List;
 
 @Path("/api/documents")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class DocumentResource {
 
     @Inject
@@ -29,10 +28,16 @@ public class DocumentResource {
     @POST
     @Path("/upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response uploadDocument(FileUpload file) {
+    public Response uploadDocument(@FormParam("file") FileUpload file) {
         try {
-            // Save document metadata
+            if (file == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"error\": \"File is required\"}")
+                    .build();
+            }
+
             Document document = new Document();
             document.setFileName(file.fileName());
             document.setContentType(file.contentType());
@@ -46,23 +51,27 @@ public class DocumentResource {
             try (InputStream is = new FileInputStream(file.uploadedFile().toFile())) {
                 ingestionService.ingestDocument(is, file.fileName(), file.contentType());
                 document.setProcessed(true);
+                documentRepository.persist(document);
             }
 
             return Response.ok(document).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity("Error uploading document: " + e.getMessage())
+                .entity("{\"error\": \"Error uploading document: " + e.getMessage() + "\"}")
                 .build();
         }
     }
 
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     public List<Document> listDocuments() {
         return documentRepository.listAll();
     }
 
     @GET
     @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getDocument(@PathParam("id") Long id) {
         Document document = documentRepository.findById(id);
         if (document == null) {
