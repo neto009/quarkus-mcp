@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.quarkus.rag.mcp.proto";
+option java_outer_classname = "AgentServiceProto";
+
+package agent;
+
+// Serviço gRPC para comunicação entre agentes usando MCP
+service AgentCommunicationService {
+  // Analisa documento
+  rpc AnalyzeDocument(AnalyzeRequest) returns (AnalyzeResponse);
+
+  // Responde questão técnica
+  rpc AnswerTechnical(TechnicalRequest) returns (TechnicalResponse);
+
+  // Valida resposta
+  rpc ValidateAnswer(ValidateRequest) returns (ValidationResponse);
+
+  // Coordena agentes
+  rpc CoordinateAgents(CoordinateRequest) returns (CoordinateResponse);
+
+  // Streaming de eventos MCP
+  rpc StreamAgentEvents(stream AgentEvent) returns (stream AgentEvent);
+}
+
+// Mensagens MCP (Model Context Protocol)
+message MCPContext {
+  string session_id = 1;
+  string agent_id = 2;
+  int64 timestamp = 3;
+  map<string, string> metadata = 4;
+}
+
+message AnalyzeRequest {
+  MCPContext context = 1;
+  string content = 2;
+  string task = 3;
+}
+
+message AnalyzeResponse {
+  MCPContext context = 1;
+  string analysis = 2;
+  string summary = 3;
+  repeated string key_points = 4;
+}
+
+message TechnicalRequest {
+  MCPContext context = 1;
+  string question = 2;
+  string context_content = 3;
+  string previous_analysis = 4;
+}
+
+message TechnicalResponse {
+  MCPContext context = 1;
+  string answer = 2;
+  double confidence = 3;
+  repeated string sources = 4;
+}
+
+message ValidateRequest {
+  MCPContext context = 1;
+  string answer = 2;
+  string original_context = 3;
+  string question = 4;
+}
+
+message ValidationResponse {
+  MCPContext context = 1;
+  bool is_valid = 2;
+  string validation_message = 3;
+  double accuracy_score = 4;
+  repeated string issues = 5;
+}
+
+message CoordinateRequest {
+  MCPContext context = 1;
+  string question = 2;
+  string analysis = 3;
+  string technical_answer = 4;
+  string validation = 5;
+}
+
+message CoordinateResponse {
+  MCPContext context = 1;
+  string final_answer = 2;
+  string reasoning = 3;
+}
+
+// Eventos para streaming MCP
+message AgentEvent {
+  MCPContext context = 1;
+  string event_type = 2;
+  string agent_name = 3;
+  string message = 4;
+  bytes data = 5;
+}
