@@ -49,12 +49,6 @@ Thumbs.db
 *.tmp
 *.temp
 
-# Documents folder
-documents/
-*.pdf
-*.docx
-*.txt
-
 # Environment
 .env
 

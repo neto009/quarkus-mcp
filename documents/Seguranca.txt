@@ -1,0 +1,5 @@
+Segurança da Informação
+
+A TechNova segue padrões internacionais de segurança cibernética e LGPD.
+Todos os dados são armazenados em servidores criptografados com autenticação multifator (MFA).
+Realizamos auditorias trimestrais e backups automáticos diários.

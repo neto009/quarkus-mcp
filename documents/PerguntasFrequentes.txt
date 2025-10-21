@@ -1,0 +1,8 @@
+Perguntas Frequentes sobre Nossos Produtos
+
+1. Quais produtos a TechNova oferece?
+Softwares de gestão (ERP), aplicativos mobile, sistemas web e soluções de automação.
+2. Os sistemas são personalizáveis?
+Sim. Adaptamos as funcionalidades às necessidades de cada empresa.
+3. É possível integrar com outros sistemas?
+Sim, usamos APIs e conectores compatíveis com plataformas populares.
